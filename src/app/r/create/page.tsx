@@ -2,15 +2,18 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/use-toast";
+import useCustomToast from "@/hooks/use-custom-toast";
 import { CreateSubbreaditPayload } from "@/lib/validators/subbreadit";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function CreateCommunity() {
   const [input, setInput] = useState<string>("");
   const router = useRouter();
+  const { loginToast } = useCustomToast();
 
   const { mutate: createCommunity, isLoading } = useMutation({
     mutationFn: async () => {
@@ -20,6 +23,38 @@ export default function CreateCommunity() {
 
       const { data } = await axios.post(`/api/subbreadit`, payload);
       return data as string;
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        if (err.response?.status === 409) {
+          return toast({
+            title: "Subbreadit already exists",
+            description: "Please choose a different Subbreadit name!",
+            variant: "destructive",
+          });
+        }
+
+        if (err.response?.status === 422) {
+          return toast({
+            title: "Invalid subbreadit name",
+            description: "Please choose a name between 3 and 21 characters.",
+            variant: "destructive",
+          });
+        }
+
+        if (err.response?.status === 401) {
+          return loginToast();
+        }
+      }
+
+      toast({
+        title: "An error has occurred",
+        description: "Could not create Subbreadit.",
+        variant: "destructive",
+      });
+    },
+    onSuccess: (data) => {
+      router.push(`/r/${data}`);
     },
   });
 
@@ -56,7 +91,7 @@ export default function CreateCommunity() {
           <Button
             onClick={() => createCommunity()}
             isLoading={isLoading}
-            disabled={input.length === 0}
+            disabled={input.length === 0 || isLoading}
           >
             Create Community
           </Button>
