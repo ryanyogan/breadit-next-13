@@ -1,3 +1,4 @@
+import Navbar from "@/components/navbar";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import "@/styles/globals.css";
@@ -25,6 +26,7 @@ export default function RootLayout({
       lang="en"
     >
       <body className="min-h-screen pt-12 bg-slate-50 antialiased">
+        <Navbar />
         <div className="container max-w-7xl mx-auto h-full pt-12">
           {children}
         </div>
