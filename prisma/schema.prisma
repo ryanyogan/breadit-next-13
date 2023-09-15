@@ -49,7 +49,130 @@ model User {
   emailVerified DateTime?
   username      String?   @unique
 
-  image    String?
-  accounts Account[]
-  sessions Session[]
+  image String?
+
+  accounts           Account[]
+  sessions           Session[]
+  posts              Post[]
+  comments           Comment[]
+  createdSubbreadits Subbreadit[]   @relation("CreatedBy")
+  votes              Vote[]
+  commentVotes       CommentVote[]
+  subscriptions      Subscription[]
+}
+
+model Subbreadit {
+  id   String @id @default(cuid())
+  name String @unique
+
+  posts Post[]
+
+  creatorId String?
+  creator   User?   @relation("CreatedBy", fields: [creatorId], references: [id])
+
+  subscribers Subscription[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+  @@index([creatorId])
+}
+
+model Subscription {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  subbreaditId String
+  subbreadit   Subbreadit @relation(fields: [subbreaditId], references: [id])
+
+  @@index([userId, subbreaditId])
+  @@index([subbreaditId])
+}
+
+model Post {
+  id      String @id @default(cuid())
+  title   String
+  content Json?
+
+  comments Comment[]
+  votes    Vote[]
+
+  subbreaditId String
+  subbreadit   Subbreadit @relation(fields: [subbreaditId], references: [id])
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([subbreaditId])
+  @@index([authorId])
+}
+
+model Comment {
+  id   String @id @default(cuid())
+  text String
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id])
+
+  replyToId String?
+  replyTo   Comment?  @relation("ReplyTo", fields: [replyToId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies   Comment[] @relation("ReplyTo")
+
+  commentId String?
+  votes     CommentVote[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([authorId])
+  @@index([postId])
+  @@index([replyToId])
+}
+
+enum VoteType {
+  UP
+  DOWN
+}
+
+model Vote {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id])
+
+  type VoteType
+
+  @@index([postId])
+  @@index([userId])
+  @@index([postId, userId])
+}
+
+model CommentVote {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  commentId String
+  comment   Comment @relation(fields: [commentId], references: [id])
+
+  type VoteType
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, commentId])
+  @@index([commentId])
 }
