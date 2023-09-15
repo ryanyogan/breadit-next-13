@@ -1,4 +1,5 @@
 import Navbar from "@/components/navbar";
+import Providers from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import "@/styles/globals.css";
@@ -28,14 +29,16 @@ export default function RootLayout({
       lang="en"
     >
       <body className="min-h-screen pt-12 bg-slate-50 antialiased">
-        <Navbar />
+        <Providers>
+          <Navbar />
 
-        {authModal}
+          {authModal}
 
-        <div className="container max-w-7xl mx-auto h-full pt-12">
-          {children}
-        </div>
-        <Toaster />
+          <div className="container max-w-7xl mx-auto h-full pt-12">
+            {children}
+          </div>
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );
