@@ -64,6 +64,8 @@ export default function PostFeed({ initialPosts, subbreaditName }: Props) {
           return (
             <li key={post.id} ref={ref}>
               <Post
+                votesAmount={votesAmount}
+                currentVote={currentVote}
                 commentAmount={post.comments.length}
                 subbreaditName={post.subbreadit.name}
                 post={post}
@@ -73,6 +75,8 @@ export default function PostFeed({ initialPosts, subbreaditName }: Props) {
         } else {
           return (
             <Post
+              votesAmount={votesAmount}
+              currentVote={currentVote}
               subbreaditName={post.subbreadit.name}
               key={post.id}
               post={post}

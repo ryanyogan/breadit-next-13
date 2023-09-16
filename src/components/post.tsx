@@ -1,21 +1,38 @@
 import { formatTimeToNow } from "@/lib/utils";
 import { ExtendedPost } from "@/types/db";
+import { Vote } from "@prisma/client";
 import { MessageSquare } from "lucide-react";
 import { useRef } from "react";
 import EditorOutput from "./editor-output";
+import PostVoteClient from "./post-vote/post-vote-client";
+
+type PartialVote = Pick<Vote, "type">;
 
 interface Props {
   subbreaditName: string;
   post: Omit<ExtendedPost, "comments" | "votes">;
   commentAmount: number;
+  votesAmount: number;
+  currentVote?: PartialVote;
 }
 
-export default function Post({ subbreaditName, post, commentAmount }: Props) {
+export default function Post({
+  subbreaditName,
+  post,
+  commentAmount,
+  votesAmount,
+  currentVote,
+}: Props) {
   const postRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className="rounded-md bg-white shadow">
       <div className="px-6 py-4 flex justify-between">
+        <PostVoteClient
+          initialVotesAmount={votesAmount}
+          postId={post.id}
+          initialVote={currentVote?.type}
+        />
         <div className="w-0 flex-1">
           <div className="max-h-40 mt-1 text-xs text-gray-500">
             {subbreaditName ? (
