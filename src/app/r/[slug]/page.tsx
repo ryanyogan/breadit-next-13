@@ -1,4 +1,5 @@
 import MiniCreatePost from "@/components/mini-create-post";
+import PostFeed from "@/components/post-feed";
 import { INFINITE_SCROLLING_PAGINATION_RESULTS } from "@/config";
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -38,7 +39,13 @@ export default async function Subbreadit({ params }: Params) {
       <h1 className="font-bold text-3xl md:text-4xl h-14">
         r/{subbreadit.name}
       </h1>
+
       <MiniCreatePost session={session} />
+
+      <PostFeed
+        initialPosts={subbreadit.posts}
+        subbreaditName={subbreadit.name}
+      />
     </>
   );
 }
