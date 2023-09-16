@@ -1,7 +1,9 @@
 import SubscribeLeaveToggle from "@/components/subscribe-leave-toggle";
+import { buttonVariants } from "@/components/ui/button";
 import { getAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { format } from "date-fns";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export default async function SlugLayout({
@@ -94,6 +96,16 @@ export default async function SlugLayout({
                   isSubscribed={isSubscribed}
                 />
               ) : null}
+
+              <Link
+                className={buttonVariants({
+                  variant: "outline",
+                  className: "w-full mb-6",
+                })}
+                href={`/r/${slug}/submit`}
+              >
+                Create Post
+              </Link>
             </dl>
           </div>
         </div>
