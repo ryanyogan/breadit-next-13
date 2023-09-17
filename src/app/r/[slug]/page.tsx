@@ -25,6 +25,9 @@ export default async function Subbreadit({ params }: Params) {
           comments: true,
           subbreadit: true,
         },
+        orderBy: {
+          createdAt: "desc",
+        },
         take: INFINITE_SCROLLING_PAGINATION_RESULTS,
       },
     },

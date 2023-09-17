@@ -40,8 +40,12 @@ export async function POST(req: Request) {
 
     await db.subscription.delete({
       where: {
-        userId: session.user.id,
-        id: subbreaditId,
+        userId_subbreaditId: {
+          subbreaditId,
+          userId: session.user.id,
+        },
+        // userId: session.user.id,
+        // id: subbreaditId,
       },
     });
 
