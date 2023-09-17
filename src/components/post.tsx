@@ -33,6 +33,7 @@ export default function Post({
           postId={post.id}
           initialVote={currentVote?.type}
         />
+
         <div className="w-0 flex-1">
           <div className="max-h-40 mt-1 text-xs text-gray-500">
             {subbreaditName ? (

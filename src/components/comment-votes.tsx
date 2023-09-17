@@ -2,24 +2,24 @@
 
 import useCustomToast from "@/hooks/use-custom-toast";
 import { cn } from "@/lib/utils";
-import { PostVoteRequest } from "@/lib/validators/vote";
+import { CommentVoteRequest } from "@/lib/validators/vote";
 import { usePrevious } from "@mantine/hooks";
-import { VoteType } from "@prisma/client";
+import { CommentVote, VoteType } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { ArrowBigDown, ArrowBigUp } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Button } from "../ui/button";
-import { toast } from "../ui/use-toast";
+import { useState } from "react";
+import { Button } from "./ui/button";
+import { toast } from "./ui/use-toast";
 
 interface PostVoteClientProps {
-  postId: string;
+  commentId: string;
   initialVotesAmount: number;
-  initialVote?: VoteType | null;
+  initialVote?: Pick<CommentVote, "type"> | null;
 }
 
-export default function PostVoteClient({
-  postId,
+export default function CommentVotes({
+  commentId,
   initialVotesAmount,
   initialVote,
 }: PostVoteClientProps) {
@@ -28,18 +28,14 @@ export default function PostVoteClient({
   const [curentVote, setCurrentVote] = useState(initialVote);
   const previousVote = usePrevious(curentVote);
 
-  useEffect(() => {
-    setCurrentVote(initialVote);
-  }, [initialVote]);
-
   const { mutate: vote, isLoading } = useMutation({
     mutationFn: async (voteType: VoteType) => {
-      const payload: PostVoteRequest = {
-        postId,
+      const payload: CommentVoteRequest = {
+        commentId,
         voteType,
       };
 
-      await axios.patch(`/api/subbreadit/post/vote`, payload);
+      await axios.patch(`/api/subbreadit/post/comment/vote`, payload);
     },
     onError: (err, voteType) => {
       if (voteType === "UP") {
@@ -63,12 +59,12 @@ export default function PostVoteClient({
       });
     },
     onMutate: (type: VoteType) => {
-      if (curentVote === type) {
+      if (curentVote?.type === type) {
         setCurrentVote(undefined);
         if (type === "UP") setVotesAmount((prev) => prev - 1);
         else if (type === "DOWN") setVotesAmount((prev) => prev + 1);
       } else {
-        setCurrentVote(type);
+        setCurrentVote({ type });
         if (type === "UP")
           setVotesAmount((prev) => prev + (curentVote ? 2 : 1));
         else if (type === "DOWN")
@@ -78,7 +74,7 @@ export default function PostVoteClient({
   });
 
   return (
-    <div className="flex flex-col gap-4 sm:gap-0 pr-6 sm:w-20 pb-4 sm:pb-0">
+    <div className="flex gap-1">
       <Button
         onClick={() => vote("UP")}
         size="sm"
@@ -88,7 +84,7 @@ export default function PostVoteClient({
         <ArrowBigUp
           className={cn(
             "h-5 w-5 text-zinc-700",
-            curentVote === "UP" && "text-emerald-500 fill-emerald-500"
+            curentVote?.type === "UP" && "text-emerald-500 fill-emerald-500"
           )}
         />
       </Button>
@@ -103,13 +99,13 @@ export default function PostVoteClient({
         variant="ghost"
         aria-label="downvote"
         className={cn({
-          "text-emerald-500": curentVote === "DOWN",
+          "text-emerald-500": curentVote?.type === "DOWN",
         })}
       >
         <ArrowBigDown
           className={cn(
             "h-5 w-5 text-zinc-700",
-            curentVote === "DOWN" && "text-red-500 fill-red-500"
+            curentVote?.type === "DOWN" && "text-red-500 fill-red-500"
           )}
         />
       </Button>

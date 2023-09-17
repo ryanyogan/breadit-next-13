@@ -1,3 +1,4 @@
+import CommentsSection from "@/components/comments-section";
 import EditorOutput from "@/components/editor-output";
 import PostVoteServer from "@/components/post-vote/post-vote-server";
 import { buttonVariants } from "@/components/ui/button";
@@ -44,7 +45,7 @@ export default async function PostPage({ params }: PostPageParams) {
 
   return (
     <div>
-      <div className="h-full flex flex-col sm:flex-row items-center sm:items-start justify-between">
+      <div className="h-full flex flex-row items-center sm:items-start justify-between">
         <Suspense fallback={<PostVoteShell />}>
           <PostVoteServer
             postId={post?.id ?? cachedPost.id}
@@ -68,6 +69,14 @@ export default async function PostPage({ params }: PostPageParams) {
           </h1>
 
           <EditorOutput content={post?.content ?? cachedPost.content} />
+
+          <Suspense
+            fallback={
+              <Loader2 className="text-zinc-500 h-5 w-5 animate-spin" />
+            }
+          >
+            <CommentsSection postId={post?.id ?? cachedPost.id} />
+          </Suspense>
         </div>
       </div>
     </div>
