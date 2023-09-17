@@ -45,7 +45,7 @@ export default async function PostPage({ params }: PostPageParams) {
 
   return (
     <div>
-      <div className="h-full flex flex-row items-center sm:items-start justify-between">
+      <div className="h-full flex flex-col sm:flex-row items-center sm:items-start justify-between">
         <Suspense fallback={<PostVoteShell />}>
           <PostVoteServer
             postId={post?.id ?? cachedPost.id}
